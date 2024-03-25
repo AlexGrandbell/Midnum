@@ -1,64 +1,100 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
+#include <random>
 
 using namespace std;
 
-// 找到两个有序数组的中位数
-void findMedian(vector<int>& X, vector<int>& Y, int n) {
-    int lowX = 0, highX = n - 1; // X数组的边界
-    int lowY = 0, highY = n - 1; // Y数组的边界
+double findMedian(vector<int>& X, vector<int>& Y, int n) {
+    //边界条件
+    if (n == 1) {
+        return (X[0] + Y[0]) / 2.0;
+    } else if(n == 2){
+        int low = max(X[0],Y[0]);
+        int max = min(X[1],Y[1]);
+        return (low + max)/2.0;
+    }
 
-    while (true) {
-        int midX = (lowX + highX) / 2;
-        int midY = (lowY + highY) / 2;
-
-        // 边界条件
-        if (lowX == highX || lowY == highY) {
-            cout<< min(X[lowX], Y[lowY])<<endl;
-            return;
-        }
-        if (highX - lowX == 1 || highY - lowY == 1) {
-            cout<< (max(X[lowX], Y[lowY]) + min(X[highX], Y[highY])) / 2.0<<endl;
-            return;
-        }
-
-        // 中位数比较
-        if (X[midX] == Y[midY]) {
-            cout<< X[midX] <<endl;
-            return;
-        } else if (X[midX] < Y[midY]) {
-            if ((highX - lowX + 1) % 2 == 0) {
-                lowX = midX + 1;
-            } else {
-                lowX = midX;
+    int mid1 = (n-1) / 2;
+    int mid2 = mid1 + 1;
+    double midx, midy;
+    if (n % 2 == 0) {
+        midx = (X[mid1] + X[mid2]) / 2.0;
+        midy = (Y[mid1] + Y[mid2]) / 2.0;
+        if (fabs(midx-midy)<1e-9) {
+            return midx;
+        } else if (midx > midy) {
+            vector<int> XX;
+            for(int i = 0;i<=mid2;i++){
+                XX.push_back(X[i]);
             }
-            highY = midY;
-        } else {
-            if ((highX - lowX + 1) % 2 == 0) {
-                highX = midX - 1;
-            } else {
-                highX = midX;
+            vector<int> YY;
+            for(int i = mid1;i<n;i++){
+                YY.push_back(Y[i]);
             }
-            lowY = midY;
+            n = YY.size();
+            return findMedian(XX,YY,n);
+        } else if (midx < midy) {
+            vector<int> XX;
+            for(int i = mid1;i<n;i++){
+                XX.push_back(X[i]);
+            }
+            vector<int> YY;
+            for(int i = 0;i<=mid2;i++){
+                YY.push_back(Y[i]);
+            }
+            n = YY.size();
+            return findMedian(XX,YY,n);
+        }
+    } else {
+        midx = X[mid1];
+        midy = Y[mid1];
+        if (midx == midy) {
+            return midx;
+        } else if (midx > midy) {
+            vector<int> XX;
+            for(int i = 0;i<=mid1;i++){
+                XX.push_back(X[i]);
+            }
+            vector<int> YY;
+            for(int i = mid1;i<n;i++){
+                YY.push_back(Y[i]);
+            }
+            n = YY.size();
+            return findMedian(XX,YY,n);
+        } else if (midx < midy) {
+            vector<int> XX;
+            for(int i = mid1;i<n;i++){
+                XX.push_back(X[i]);
+            }
+            vector<int> YY;
+            for(int i = 0;i<=mid1;i++){
+                YY.push_back(Y[i]);
+            }
+            n = YY.size();
+            return findMedian(XX,YY,n);
         }
     }
 }
 
 int main() {
     int n;
-    cin >> n;
+    cin>>n;
+    vector<int> X;
+    vector<int> Y;
 
-    vector<int> X(n);
-    vector<int> Y(n);
+    int num;
+    for (int i = 0; i < n; ++i) {
+        cin >> num;
+        X.push_back(num);
+    }
+    for (int i = 0; i < n; ++i) {
+        cin >> num;
+        Y.push_back(num);
+    }
 
-    for (int i = 0; i < n; ++i)
-        cin >> X[i];
-
-    for (int i = 0; i < n; ++i)
-        cin >> Y[i];
-
-    findMedian(X, Y, n);
+    cout<<findMedian(X, Y, n);
 
     return 0;
 }
